@@ -4,7 +4,7 @@
 #gameBoard{
     border: 3px solid;
 }
-#score{
+#scoreText{
     font-family: "Permanent Marker", cursive;
     font-size: 100px;
 }
