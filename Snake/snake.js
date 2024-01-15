@@ -2,11 +2,13 @@ const gameBoard= document.querySelector("#gameBoard");
 const ctx=gameBoard.getContext("2d");
 const scoreText=document.querySelector("#scoreText");
 const resetBtn=document.querySelector("#resetBtn");
+resetBtn.style.left=gameBoard.offsetLeft+10+"px";
+resetBtn.style.top=gameBoard.offsetTop+10+"px";
+
 const gameWidth=gameBoard.width;
 const gameHeight=gameBoard.height;
-const boardBackground="white";
-const snakeColor="lightgreen";
-const snakeBorder="black";
+const snakeColor="green";
+const snakeBorder="green";
 const foodColour="red";
 const unitSize=25;
 let running=false;
@@ -48,7 +50,6 @@ function nextTick(){
     }
 };
 function clearBoard(){
-    ctx.fillStyle=boardBackground;
     ctx.fillRect(0,0,gameWidth,gameHeight);
 };
 function createFood(){
@@ -139,6 +140,7 @@ function checkGameOver(){
 function displayGameOver(){
     ctx.font="50px MV Boli";
     ctx.textAlign="center";
+    ctx.fillStyle="Red";
     ctx.fillText("GAME OVER",gameWidth/2,gameHeight/2);
     running=false;
 };
