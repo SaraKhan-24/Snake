@@ -2,13 +2,18 @@ const gameBoard= document.querySelector("#gameBoard");
 const ctx=gameBoard.getContext("2d");
 const scoreText=document.querySelector("#scoreText");
 const resetBtn=document.querySelector("#resetBtn");
-const gameWidth=gameBoard.width;
-const gameHeight=gameBoard.height;
-const boardBackground="white";
+const margin=40;
+const windowWidth=window.innerWidth;
+const windowHeight=window.innerHeight;
+const gameWidth=Math.floor(windowWidth-margin+20);
+const gameHeight=Math.floor(windowHeight-margin+20);
+gameBoard.width=gameWidth;
+gameBoard.height=gameHeight;
+const boardBackground="black";
 const snakeColor="lightgreen";
-const snakeBorder="black";
-const foodColour="red";
-const unitSize=25;
+const snakeBorder="lightgreen";
+const foodColour="yellow";
+const unitSize=24;
 let running=false;
 let xVelocity=unitSize;
 let yVelocity=0;
@@ -31,9 +36,12 @@ function gameStart(){
     scoreText.textContent=score;
     createFood();
     drawFood();
+    createFood();
     nextTick();
 };
 function nextTick(){
+
+    console.log(running);
     if(running){
         setTimeout(()=>{
             clearBoard();
@@ -56,35 +64,54 @@ function createFood(){
         const randNum=Math.round((Math.random()*(max-min)+min)/unitSize)*unitSize;
         return randNum;
     }
-    foodX=randomFood(0,gameWidth-unitSize);
-    foodY=randomFood(0,gameWidth-unitSize);
+    do {
+        // Generate random coordinates within valid grid boundaries
+        foodX = randomFood(0, gameWidth - unitSize);
+        foodY = randomFood(0, gameHeight - unitSize);
+    
+        // Check for collision with any snake part
+      } while (snake.some(part => part.x === foodX && part.y === foodY));
+
 };
 function drawFood(){
-    ctx.fillStyle=foodColour;
-    ctx.fillRect(foodX,foodY,unitSize,unitSize);
+    ctx.fillStyle = foodColour;
+  ctx.beginPath();
+  ctx.arc(foodX + unitSize / 2, foodY + unitSize / 2, unitSize / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+    
+    
 };
 function moveSnake(){
     const head={x:snake[0].x+xVelocity,
                 y: snake[0].y+yVelocity};
     snake.unshift(head);
     //if food is eaten
-    if(snake[0].x==foodX&&snake[0].y==foodY){
+   
+
+    if((snake[0].x==foodX&&snake[0].y==foodY)){
         score++;
         scoreText.textContent=score;
         createFood();
-    }else{;
+        drawFood();
+    }else{
         snake.pop();
     }
 };
-function drawSnake(){
-    ctx.fillStyle=snakeColor;
-    ctx.strokeStyle=snakeBorder;
-    snake.forEach(snakePart=>{
-        ctx.fillRect(snakePart.x,snakePart.y,unitSize,unitSize);
-        ctx.strokeRect(snakePart.x,snakePart.y,unitSize,unitSize);
-
-    })
-};
+function drawSnake() {
+    ctx.fillStyle = snakeColor;
+    ctx.strokeStyle = snakeBorder;
+    snake.forEach(snakePart => {
+      ctx.beginPath(); // Start a new path for each circle
+      ctx.arc(snakePart.x + unitSize / 2, // Center the circle based on unit size
+              snakePart.y + unitSize / 2,
+              unitSize / 2, // Radius is half the unit size
+              0, Math.PI * 2); // Full circle arc
+      ctx.fill();
+      ctx.closePath(); // Close the path for proper rendering
+      ctx.stroke(); // Add border if desired
+    });
+  }
 function changeDirection(event){
     const keyPressed=event.keyCode;
     const LEFT=37;
