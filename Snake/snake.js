@@ -9,9 +9,11 @@ const gameWidth=Math.floor(windowWidth-margin+20);
 const gameHeight=Math.floor(windowHeight-margin+20);
 gameBoard.width=gameWidth;
 gameBoard.height=gameHeight;
-const boardBackground="black";
-const snakeColor="lightgreen";
-const snakeBorder="lightgreen";
+const gradient = ctx.createLinearGradient(0, 0, gameWidth, gameHeight); // Adjust as needed
+gradient.addColorStop(0, '#2f0068');
+gradient.addColorStop(1, '#000000');
+
+const snakeBorder="white";
 const foodColour="yellow";
 const unitSize=24;
 let running=false;
@@ -27,6 +29,7 @@ let snake=[
     {x:unitSize, y:0},
     {x:0, y:0}
 ];
+
 window.addEventListener("keydown",changeDirection);
 resetBtn.addEventListener("click",resetGame);
 gameStart();
@@ -56,7 +59,7 @@ function nextTick(){
     }
 };
 function clearBoard(){
-    ctx.fillStyle=boardBackground;
+    ctx.fillStyle=gradient;
     ctx.fillRect(0,0,gameWidth,gameHeight);
 };
 function createFood(){
@@ -99,6 +102,10 @@ function moveSnake(){
     }
 };
 function drawSnake() {
+    const snakeColor=ctx.createLinearGradient(snake[0].x, snake[0].y, snake[snake.length-1].x, snake[snake.length-1].y);
+snakeColor.addColorStop(0, '#dbdb00');
+snakeColor.addColorStop(1, '#f83e00');
+
     ctx.fillStyle = snakeColor;
     ctx.strokeStyle = snakeBorder;
     snake.forEach(snakePart => {
@@ -145,16 +152,16 @@ function changeDirection(event){
 function checkGameOver(){
     switch(true){
         case(snake[0].x<0):
-        running=false;
+        snake[0].x=gameWidth-unitSize;
         break;
         case(snake[0].x>=gameWidth):
-        running=false;
+        snake[0].x=0;
         break;
         case(snake[0].y<0):
-        running=false;
+        snake[0].y=gameHeight-unitSize;
         break;
         case(snake[0].y>=gameHeight):
-        running=false;
+        snake[0].y=0;
         break;
     }
     for(let i=1;i<snake.length;i++){
