@@ -8,6 +8,13 @@ const gameHeight=Math.floor(windowHeight-margin+20);
 gameBoard.width=gameWidth;
 gameBoard.height=gameHeight;
 
+const gameOverCanvas = document.querySelector("#gameOverCanvas"); // Create game over canvas
+gameOverCanvas.width = gameWidth;
+gameOverCanvas.height = gameHeight;
+
+
+const goCtx = gameOverCanvas.getContext("2d");
+
 let particleArray;
 
 
@@ -19,7 +26,7 @@ const scoreText=document.querySelector("#scoreText");
 const resetBtn=document.querySelector("#resetBtn");
 
 const gradient = ctx.createLinearGradient(0, 0, gameWidth, gameHeight); // Adjust as needed
-gradient.addColorStop(0, '#2f0068');
+gradient.addColorStop(0, '#4f0090');
 gradient.addColorStop(1, '#000000');
 
 const snakeBorder="white";
@@ -122,6 +129,23 @@ function animate(){
         particleArray[i].update();
     }
     connect();
+
+    if (!running) {
+        // Draw game over elements on gameOverCanvas
+        goCtx.clearRect(0, 0, gameWidth, gameHeight);
+        goCtx.font = "50px MV Boli, sans-serif";
+        goCtx.fillStyle = "red";
+        goCtx.textAlign = "center";
+        goCtx.fillText("GAME OVER", gameWidth / 2, gameHeight / 2 - 50);
+        goCtx.font = "30px sans-serif";
+        goCtx.fillStyle = "white";
+        goCtx.fillText("Your Score: " + score, gameWidth / 2, gameHeight / 2 + 50);
+    
+        // Draw reset button on gameOverCanvas
+        // ... button drawing code ...
+        resetBtn.style.display="block";
+    }
+    
 }
 
 window.addEventListener("keydown",changeDirection);
@@ -253,17 +277,21 @@ function changeDirection(event){
 function checkGameOver(){
     switch(true){
         case(snake[0].x<0):
-        snake[0].x=gameWidth-unitSize;
+        running=false;
+        displayGameOver();
         break;
         case(snake[0].x>=gameWidth):
-        snake[0].x=0;
-        break;
+        running=false;
+        displayGameOver();
+                break;
         case(snake[0].y<0):
-        snake[0].y=gameHeight-unitSize;
-        break;
+        running=false;
+        displayGameOver();
+                break;
         case(snake[0].y>=gameHeight):
-        snake[0].y=0;
-        break;
+        running=false;
+        displayGameOver();
+                break;
     }
     for(let i=1;i<snake.length;i++){
         if(snake[i].x==snake[0].x&&snake[i].y==snake[0].y){
@@ -273,13 +301,11 @@ function checkGameOver(){
     }
 };
 function displayGameOver(){
-    ctx.font = "50px MV Boli"; // Set font for clarity
-    ctx.fillStyle = "red"; // Set text color to red
-    ctx.textAlign = "center"; // Center the text horizontally
-    ctx.fillText("GAME OVER", gameWidth / 2, gameHeight / 2); 
-    running=false;
+    gameOverCanvas.style.display = "block";
 };
 function resetGame(){
+    gameOverCanvas.style.display = "none";
+    resetBtn.style.display = "none";
     score=0;
     xVelocity=unitSize;
     yVelocity=0;
