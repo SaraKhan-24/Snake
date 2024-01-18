@@ -1,6 +1,7 @@
 const gameBoard= document.querySelector("#gameBoard");
 const ctx=gameBoard.getContext("2d");
 const margin=40;
+let count=0;
 const windowWidth=window.innerWidth;
 const windowHeight=window.innerHeight;
 const gameWidth=Math.floor(windowWidth-margin+20);
@@ -9,11 +10,17 @@ gameBoard.width=gameWidth;
 gameBoard.height=gameHeight;
 
 const gameOverCanvas = document.querySelector("#gameOverCanvas"); // Create game over canvas
-gameOverCanvas.width = gameWidth;
-gameOverCanvas.height = gameHeight;
+
+
+const backgroundAudio=document.getElementById("backgroundAudio");
+const eatingAudio=document.getElementById("eatingAudio");
+const gameoverAudio=document.getElementById("gameoverAudio");
+const starAudio=document.getElementById("starAudio");
 
 
 const goCtx = gameOverCanvas.getContext("2d");
+gameOverCanvas.width=gameWidth/2;
+gameOverCanvas.height=gameHeight/2+100;
 
 let particleArray;
 
@@ -51,6 +58,12 @@ function(event){
     snake[0].y=event.y;
 }
 );
+function showInstructions(){
+    const inst=document.getElementById("Instructions");
+    const inCtx=inst.getContext("2d");
+
+};
+
 class Particle{
     constructor(x,y,directionX,directionY,size,color){
         this.x=x;
@@ -63,7 +76,7 @@ class Particle{
     draw(){
         ctx.beginPath();
         ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false);
-        ctx.fillStyle='#c78cf7';
+        ctx.fillStyle='#d67ade';
         ctx.fill();
     }
     update(){
@@ -77,24 +90,30 @@ class Particle{
         let dy = this.y - snake[0].y;
         let distance = Math.sqrt(dx * dx + dy * dy);
         if (distance < 150) { // Adjust the distance as needed
-          this.directionX += dx / 100; // Repel from snake head
-          this.directionY += dy / 100;
+          this.directionX += dx / 200; // Repel from snake head
+          this.directionY += dy / 200;
         }
         this.x+=this.directionX/7;
         this.y+=this.directionY/7;
         this.draw();
     }
+    restore(){
+        let dx = this.x - snake[0].x;
+        let dy = this.y - snake[0].y;
+        this.directionX -= dx/10000; // Repel from snake head
+          this.directionY -= dy/10000;
+    }
 }
 function init(){
     particleArray=[];
-    let numberofParticles=(gameBoard.height*gameBoard.width)/50000;
+    let numberofParticles=(gameBoard.height*gameBoard.width)/8000;
     for(let i=0;i<numberofParticles;i++){
         let size=(Math.random()*5)+1;
         let x=(Math.random()*((gameWidth-size*2)-(size*2))+size*2);
         let y=(Math.random()*((gameHeight-size*2)-(size*2))+size*2);
         let directionX=(Math.random()*5)-2.5;
         let directionY=(Math.random()*5)-2.5;
-        let color='#c78cf7';
+        let color='#d67ade';
     
         particleArray.push(new Particle(x,y,directionX,directionY,size,color) );
 
@@ -108,12 +127,13 @@ function connect(){
             +((particleArray[a].y-particleArray[b].y)
             *(particleArray[a].y-particleArray[b].y));
             if(distance<(gameWidth/7)*(gameHeight/7)){
-                ctx.strokeStyle='c78cf7';
+                ctx.strokeStyle='#d67ade';
                 ctx.lineWidth=1;
                 ctx.beginPath();
                 ctx.moveTo(particleArray[a].x,particleArray[a].y);
                 ctx.lineTo(particleArray[b].x,particleArray[b].y);
                 ctx.stroke();
+                
             }
         }
     }
@@ -122,27 +142,28 @@ function animate(){
     requestAnimationFrame(animate);
     
     ctx.clearRect(0,0,gameWidth,gameHeight);
-    drawSnake(); // Draw snake before particles
-    drawFood(); 
+    
 
     for(let i=0;i<particleArray.length;i++){
         particleArray[i].update();
     }
     connect();
+    drawSnake(); // Draw snake before particles
+    drawFood(); 
 
     if (!running) {
         // Draw game over elements on gameOverCanvas
         goCtx.clearRect(0, 0, gameWidth, gameHeight);
-        goCtx.font = "50px MV Boli, sans-serif";
+        goCtx.font = "70px MV Boli, sans-serif";
         goCtx.fillStyle = "red";
         goCtx.textAlign = "center";
-        goCtx.fillText("GAME OVER", gameWidth / 2, gameHeight / 2 - 50);
+        goCtx.strokeStyle="white";
+        goCtx.fillText("GAME OVER", gameWidth/2-300 , gameHeight / 2 - 150);
         goCtx.font = "30px sans-serif";
-        goCtx.fillStyle = "white";
-        goCtx.fillText("Your Score: " + score, gameWidth / 2, gameHeight / 2 + 50);
+        goCtx.fillStyle = "lavender";
+        goCtx.fillText("Your Score: " + score, gameWidth / 2-300, gameHeight / 2 -55);
     
-        // Draw reset button on gameOverCanvas
-        // ... button drawing code ...
+       
         resetBtn.style.display="block";
     }
     
@@ -165,16 +186,24 @@ function gameStart(){
     
 };
 function nextTick(){
+    count++;
 
     console.log(running);
     if(running){
         setTimeout(()=>{
-            
+            backgroundAudio.play();
             clearBoard();
             drawFood();
             moveSnake();
             drawSnake();
             checkGameOver();
+            if(count%25==0){
+                console.log(count);
+                for(let i=0;i<particleArray.length;i++){
+                    particleArray[i].restore();
+                }
+            }
+            
             nextTick();
         },75)
     }else{
@@ -218,6 +247,8 @@ function moveSnake(){
     let distance=Math.sqrt(dx*dx+dy*dy);
 
     if((snake[0].x==foodX&&snake[0].y==foodY)||(distance<snake[0].radius+(unitSize/2))){
+        eatingAudio.play();
+
         score++;
         scoreText.textContent=score;
         createFood();
@@ -302,10 +333,13 @@ function checkGameOver(){
 };
 function displayGameOver(){
     gameOverCanvas.style.display = "block";
+    backgroundAudio.pause();
+    gameoverAudio.play();
 };
 function resetGame(){
     gameOverCanvas.style.display = "none";
     resetBtn.style.display = "none";
+    backgroundAudio.play();
     score=0;
     xVelocity=unitSize;
     yVelocity=0;
@@ -316,5 +350,8 @@ function resetGame(){
         {x:unitSize, y:0},
         {x:0, y:0}
     ];
+    for(let i=0;i<particleArray.length;i++){
+        particleArray[i].restore();
+    }
     gameStart();
 };
