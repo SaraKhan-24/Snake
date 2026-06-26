@@ -1,0 +1,12 @@
+.gradle/
+build/
+*.keystore
+*.idsig
+*.bat
+gradlew
+gradle/
+settings.gradle
+build.gradle
+gradle.properties
+app/
+manifest-checksum.txt

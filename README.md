@@ -55,3 +55,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Sara Khan
 
+## 📱 Mobile Deployment (Google Play Store Ready)
+This project has been optimized as a Progressive Web App (PWA) and successfully packaged into a native Android App Bundle (`.aab`) using Google's official **Trusted Web Activity (TWA)** framework.
+
+- Fully compliant with Google Play Console upload requirements.
+- Configured for fullscreen, immersive gameplay (removes browser URL navigation bar).
+- Signed via secure keystore generation.
+
