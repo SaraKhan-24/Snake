@@ -88,7 +88,7 @@ class Particle{
         this.directionY *= 0.95;
 
         // Cap speed at a reasonable limit
-        const maxSpeed = 3.5;
+        const maxSpeed = 1.5;
         const currentSpeed = Math.sqrt(this.directionX * this.directionX + this.directionY * this.directionY);
         if (currentSpeed > maxSpeed) {
             this.directionX = (this.directionX / currentSpeed) * maxSpeed;
@@ -96,14 +96,14 @@ class Particle{
         }
 
         // Prevent particles from stopping entirely
-        const minSpeed = 0.5;
+        const minSpeed = 0.2;
         if (currentSpeed < minSpeed && currentSpeed > 0) {
             this.directionX = (this.directionX / currentSpeed) * minSpeed;
             this.directionY = (this.directionY / currentSpeed) * minSpeed;
         }
 
-        this.x+=this.directionX/7;
-        this.y+=this.directionY/7;
+        this.x+=this.directionX/14;
+        this.y+=this.directionY/14;
         this.draw();
     }
     restore(){
@@ -259,7 +259,7 @@ function nextTick(){
             }
             
             nextTick();
-        },75)
+        },130)
     }else{
         displayGameOver();
     }
