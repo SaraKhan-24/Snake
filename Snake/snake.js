@@ -82,6 +82,26 @@ class Particle{
           this.directionX += dx / 200; // Repel from snake head
           this.directionY += dy / 200;
         }
+
+        // Apply friction/damping to slow down fast particles
+        this.directionX *= 0.95;
+        this.directionY *= 0.95;
+
+        // Cap speed at a reasonable limit
+        const maxSpeed = 3.5;
+        const currentSpeed = Math.sqrt(this.directionX * this.directionX + this.directionY * this.directionY);
+        if (currentSpeed > maxSpeed) {
+            this.directionX = (this.directionX / currentSpeed) * maxSpeed;
+            this.directionY = (this.directionY / currentSpeed) * maxSpeed;
+        }
+
+        // Prevent particles from stopping entirely
+        const minSpeed = 0.5;
+        if (currentSpeed < minSpeed && currentSpeed > 0) {
+            this.directionX = (this.directionX / currentSpeed) * minSpeed;
+            this.directionY = (this.directionY / currentSpeed) * minSpeed;
+        }
+
         this.x+=this.directionX/7;
         this.y+=this.directionY/7;
         this.draw();
