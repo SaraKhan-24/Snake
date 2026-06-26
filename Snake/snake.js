@@ -1,51 +1,44 @@
-const gameBoard= document.querySelector("#gameBoard");
-const ctx=gameBoard.getContext("2d");
-const margin=40;
-let count=0;
-const windowWidth=window.innerWidth;
-const windowHeight=window.innerHeight;
-const gameWidth=Math.floor(windowWidth-margin+20);
-const gameHeight=Math.floor(windowHeight-margin+20);
-gameBoard.width=gameWidth;
-gameBoard.height=gameHeight;
+const gameBoard = document.querySelector("#gameBoard");
+const ctx = gameBoard.getContext("2d");
+const margin = 40;
+let count = 0;
 
-const gameOverCanvas = document.querySelector("#gameOverCanvas"); // Create game over canvas
+const snakeBorder = "white";
+const foodColour = "yellow";
+const unitSize = 24;
 
+// Calculate width and height to be exact multiples of unitSize
+const windowWidth = window.innerWidth;
+const windowHeight = window.innerHeight;
+const gameWidth = Math.floor((windowWidth - margin) / unitSize) * unitSize;
+const gameHeight = Math.floor((windowHeight - margin) / unitSize) * unitSize;
 
-const backgroundAudio=document.getElementById("backgroundAudio");
-const eatingAudio=document.getElementById("eatingAudio");
-const gameoverAudio=document.getElementById("gameoverAudio");
-const starAudio=document.getElementById("starAudio");
+gameBoard.width = gameWidth;
+gameBoard.height = gameHeight;
 
+const gameOverPanel = document.querySelector("#gameOverPanel");
+const finalScore = document.querySelector("#finalScore");
+const resetBtn = document.querySelector("#resetBtn");
+const scoreText = document.querySelector("#scoreText");
 
-const goCtx = gameOverCanvas.getContext("2d");
-gameOverCanvas.width=gameWidth/2;
-gameOverCanvas.height=gameHeight/2+100;
+const backgroundAudio = document.getElementById("backgroundAudio");
+const eatingAudio = document.getElementById("eatingAudio");
+const gameoverAudio = document.getElementById("gameoverAudio");
+const starAudio = document.getElementById("starAudio");
 
 let particleArray;
 
-
-
-
-
-
-const scoreText=document.querySelector("#scoreText");
-const resetBtn=document.querySelector("#resetBtn");
-
-const gradient = ctx.createLinearGradient(0, 0, gameWidth, gameHeight); // Adjust as needed
+const gradient = ctx.createLinearGradient(0, 0, gameWidth, gameHeight);
 gradient.addColorStop(0, '#4f0090');
 gradient.addColorStop(1, '#000000');
 
-const snakeBorder="white";
-const foodColour="yellow";
-const unitSize=24;
-let running=false;
-let xVelocity=unitSize;
-let yVelocity=0;
+let running = false;
+let xVelocity = unitSize;
+let yVelocity = 0;
 let foodX;
 let foodY;
-let score=0;
-let snake=[
+let score = 0;
+let snake = [
     {x:unitSize*4, y:0},
     {x:unitSize*3, y:0},
     {x:unitSize*2, y:0},
@@ -58,11 +51,7 @@ function(event){
     snake[0].y=event.y;
 }
 );
-function showInstructions(){
-    const inst=document.getElementById("Instructions");
-    const inCtx=inst.getContext("2d");
 
-};
 
 class Particle{
     constructor(x,y,directionX,directionY,size,color){
@@ -152,25 +141,70 @@ function animate(){
     drawFood(); 
 
     if (!running) {
-        // Draw game over elements on gameOverCanvas
-        goCtx.clearRect(0, 0, gameWidth, gameHeight);
-        goCtx.font = "70px MV Boli, sans-serif";
-        goCtx.fillStyle = "red";
-        goCtx.textAlign = "center";
-        goCtx.strokeStyle="white";
-        goCtx.fillText("GAME OVER", gameWidth/2-300 , gameHeight / 2 - 150);
-        goCtx.font = "30px sans-serif";
-        goCtx.fillStyle = "lavender";
-        goCtx.fillText("Your Score: " + score, gameWidth / 2-300, gameHeight / 2 -55);
-    
-       
-        resetBtn.style.display="block";
+        // Handled by displayGameOver HTML overlay panel
     }
     
 }
 
-window.addEventListener("keydown",changeDirection);
-resetBtn.addEventListener("click",resetGame);
+window.addEventListener("keydown", changeDirection);
+resetBtn.addEventListener("click", resetGame);
+
+// --- Mobile Touch Controls ---
+let touchStartX = 0;
+let touchStartY = 0;
+
+window.addEventListener("touchstart", function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}, { passive: true });
+
+window.addEventListener("touchend", function(event) {
+    if (!running) return;
+    
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    
+    const dx = touchEndX - touchStartX;
+    const dy = touchEndY - touchStartY;
+    const threshold = 35; // swipe sensitivity threshold
+    
+    const goingUp = (yVelocity == -unitSize);
+    const goingDown = (yVelocity == unitSize);
+    const goingRight = (xVelocity == unitSize);
+    const goingLeft = (xVelocity == -unitSize);
+    
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal swipe
+        if (Math.abs(dx) > threshold) {
+            if (dx > 0 && !goingLeft) {
+                xVelocity = unitSize;
+                yVelocity = 0;
+            } else if (dx < 0 && !goingRight) {
+                xVelocity = -unitSize;
+                yVelocity = 0;
+            }
+        }
+    } else {
+        // Vertical swipe
+        if (Math.abs(dy) > threshold) {
+            if (dy > 0 && !goingUp) {
+                yVelocity = unitSize;
+                xVelocity = 0;
+            } else if (dy < 0 && !goingDown) {
+                yVelocity = -unitSize;
+                xVelocity = 0;
+            }
+        }
+    }
+}, { passive: true });
+
+// Prevent default scrolling on swipe while playing
+window.addEventListener("touchmove", function(event) {
+    if (running) {
+        event.preventDefault();
+    }
+}, { passive: false });
+
 gameStart();
 
 function gameStart(){
@@ -332,13 +366,13 @@ function checkGameOver(){
     }
 };
 function displayGameOver(){
-    gameOverCanvas.style.display = "block";
+    gameOverPanel.style.display = "flex";
+    finalScore.textContent = score;
     backgroundAudio.pause();
     gameoverAudio.play();
 };
 function resetGame(){
-    gameOverCanvas.style.display = "none";
-    resetBtn.style.display = "none";
+    gameOverPanel.style.display = "none";
     backgroundAudio.play();
     score=0;
     xVelocity=unitSize;
