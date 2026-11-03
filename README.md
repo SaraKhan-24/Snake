@@ -1,64 +1,41 @@
-
-
----
-
 # Snake Game
 
-This Snake game is a project created by Sara Khan while learning web programming as a beginner. It's a classic rendition of the popular Snake game where the player controls a snake that moves around the game board, eating food pellets to grow longer while avoiding collisions with itself and the walls.
+A browser version of Snake built with HTML5 canvas and vanilla JavaScript. It was one of my first web projects, written while learning front-end development.
 
-## Getting Started
+[Play it here](add-live-demo-link) | Also packaged as an Android app (see below)
 
-To play the game, simply open the `index.html` file in a web browser that supports HTML5 canvas. You can also host the files on a web server to play the game online.
+## How to play
 
-### Prerequisites
-
-There are no prerequisites to play the game. Ensure you have a modern web browser installed.
-
-### Installation
-
-1. Clone or download the repository to your local machine.
-2. Open the `index.html` file in your preferred web browser.
-
-## How to Play
-
-- Use the arrow keys (Up, Down, Left, Right) to control the direction of the snake.
-- The snake will continuously move in the direction it's facing.
-- The goal is to eat as much food as possible to increase your score.
-- Avoid collisions with the walls and the snake's own body. Colliding ends the game.
-- Press the "Restart" button to play again after the game ends.
+- Use the arrow keys to steer the snake.
+- Eat food to grow and increase your score.
+- The game ends if you hit a wall or your own body. Press **Restart** to play again.
 
 ## Features
 
-- **Score Display:** The current score is displayed on the game screen.
-- **Restart Button:** Allows the player to restart the game after it ends.
-- **Sound Effects:** Various sound effects enhance the gaming experience.
-- **Responsive Design:** The game is designed to adapt to different screen sizes.
+- Score display
+- Restart button
+- Sound effects and background music
+- Layout that adapts to different screen sizes
 
-## Built With
+## Built with
 
-- HTML5
-- CSS3 (Styling)
-- JavaScript (Game logic)
+HTML5 canvas, CSS3, JavaScript.
 
-## Acknowledgments
+## Run locally
 
-Special thanks to the following resources:
+Clone the repository and open `index.html` in a modern browser. No build step or dependencies are needed.
 
-- [Sound effects](sounds/) from [source](sources-of-sounds.com).
-- [Background music](sounds/beings-of-electric-breath-76643.mp4) from [source](source-of-music.com).
+## Android packaging
+
+The game is set up as a Progressive Web App and packaged as an Android App Bundle (`.aab`) with the Trusted Web Activity framework, which runs it fullscreen without a browser address bar. The bundle is signed with a generated keystore and meets Google Play Console upload requirements.
+
+## Credits
+
+- Sound effects: [name, source link, license]
+- Background music: [name, source link, license]
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).
 
-## Author
-
-Sara Khan
-
-## 📱 Mobile Deployment (Google Play Store Ready)
-This project has been optimized as a Progressive Web App (PWA) and successfully packaged into a native Android App Bundle (`.aab`) using Google's official **Trusted Web Activity (TWA)** framework.
-
-- Fully compliant with Google Play Console upload requirements.
-- Configured for fullscreen, immersive gameplay (removes browser URL navigation bar).
-- Signed via secure keystore generation.
-
+Author: Sara Khan
